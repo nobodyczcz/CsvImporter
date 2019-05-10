@@ -19,5 +19,9 @@
   "bugs": {
     "url": "https://github.com/nobodyczcz/CsvImporter/issues"
   },
-  "homepage": "https://github.com/nobodyczcz/CsvImporter#readme"
+  "homepage": "https://github.com/nobodyczcz/CsvImporter#readme",
+  "dependencies": {
+    "argparse": "^1.0.10",
+    "mongoose": "^5.5.7"
+  }
 }
