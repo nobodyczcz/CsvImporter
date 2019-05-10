@@ -1,0 +1,23 @@
+{
+  "name": "csvimport",
+  "version": "1.0.0",
+  "description": "Import csv from url and write to mangodb",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/nobodyczcz/CsvImporter.git"
+  },
+  "keywords": [
+    "nodejs",
+    "javascript"
+  ],
+  "author": "Zhe Chen",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nobodyczcz/CsvImporter/issues"
+  },
+  "homepage": "https://github.com/nobodyczcz/CsvImporter#readme"
+}
