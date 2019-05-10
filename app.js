@@ -1,24 +1,16 @@
 #!/usr/bin/env node
 'use strict';
 
-//import packages
-var ArgumentParser = require('argparse').ArgumentParser;
+//import modules
+const argParser = require('./supportive/argparser').argParser; //argument parser
+const DataBase = require('./model/db').DataBase;
 
-//initialize argument parser
-var argParser = new ArgumentParser({
-    version: '0.0.1',
-    addHelp:true,
-    description: 'This program import csv file from a url and write data to mangoDB'
-});
-
-argParser.addArgument(['-u','--url'],{
-    help:'the url of csv file',
-    required: true
-});
-
-argParser.addArgument(['-m','--mongo-Connection'],{
-    help:'the connection string of mongoDB',
-    required:true
-});
+//Parse arugments. --url-csv and --mongo-connection are required
 var args = argParser.parseArgs();
+console.log(`Csv url: ${args.url_csv}`)
+console.log(`MongoDB connection string: ${args.mongo_connection}`)
 
+//Initialize the connection to mongodb and exit the program if the connection string is invalid
+var db = new DataBase(args.mongo_connection);
+
+//process.exit(0);
