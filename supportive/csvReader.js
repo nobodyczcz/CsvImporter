@@ -1,8 +1,9 @@
-var fs = require('fs');
 var csv = require('fast-csv')
+var request = require('request');
+
 
 /**
- * This class open the target csv file as stream.
+ * This class open the target csv file as stream using request.
  * Then it process the csv stream, read data row by row and write data to mongodb connection 
  * 
  */
@@ -23,10 +24,16 @@ class CsvReader {
     * @param {function} callBack the callback function that will be called after create file stream successful
     */
     setUpReader(callBack){
-        this.stream = fs.createReadStream(this.url);
-        this.stream.on('open',()=>{
-            callBack(true)
-        })
+
+        this.stream = request(this.url);// Open file as stream to handle large file
+        this.stream.on('response', function(response) {
+            if(response.statusCode==200){
+                callBack(true)
+            }
+            else{
+                callBack(false)
+            }
+          })
         this.stream.on('error', (error) => { 
             callBack(false,error)
          });

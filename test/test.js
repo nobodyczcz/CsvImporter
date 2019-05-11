@@ -151,10 +151,10 @@ describe('#DataBase.createOrder()', function() {
 //Test set up connection to a files
 describe('#CsvReader.setUpReader()', function() {
 
-    context('with valid local url', function() {
+    context('with valid url', function() {
         it('should return true', function(done) {
         
-            var reader = new CsvReader('./test/orders.csv');
+            var reader = new CsvReader('https://raw.githubusercontent.com/nobodyczcz/CsvImporter/master/test/orders.csv');
             reader.setUpReader((success,error=null)=>{
                 if(success){
                     expect(success).to.be.true;
@@ -169,10 +169,10 @@ describe('#CsvReader.setUpReader()', function() {
         })
     })
 
-    context('with invalid local url', function() {
+    context('with invalid url', function() {
         it('should return false', function(done) {
         
-            var reader = new CsvReader('xxxxx.csv');
+            var reader = new CsvReader('https://raw.githubusercontent.com/nobodyczcz/CsvImporter/master/xxxxx.csv');
             reader.setUpReader((success,error=null)=>{
                 expect(success).to.be.false;
                 done()
@@ -192,7 +192,7 @@ describe('#CsvReader.processCsv()', function() {
     context('with empty file', function() {
         it('result count should all be 0', function(done) {
         
-            var reader = new CsvReader('./test/emptyfile.csv');
+            var reader = new CsvReader('https://raw.githubusercontent.com/nobodyczcz/CsvImporter/master/test/emptyfile.csv');
             reader.setUpReader((success,error=null)=>{
             });
             reader.processCsv(testDb,(successCount,insertErrorCount,cusNotExistCount)=>{
@@ -208,7 +208,7 @@ describe('#CsvReader.processCsv()', function() {
     context('with file but not csv', function() {
         it('result count should be 0,0,1', function(done) {
         
-            var reader = new CsvReader('./test/notCsv.csv');
+            var reader = new CsvReader('https://raw.githubusercontent.com/nobodyczcz/CsvImporter/master/test/notCsv.csv');
             reader.setUpReader((success,error=null)=>{
             });
             reader.processCsv(testDb,(successCount,insertErrorCount,cusNotExistCount)=>{
@@ -224,7 +224,7 @@ describe('#CsvReader.processCsv()', function() {
     context('with valid data', function() {
         it('result count should be 3,0,0', function(done) {
         
-            var reader = new CsvReader('./test/valid.csv');
+            var reader = new CsvReader('https://raw.githubusercontent.com/nobodyczcz/CsvImporter/master/test/valid.csv');
             reader.setUpReader((success,error=null)=>{
             });
             reader.processCsv(testDb,(successCount,insertErrorCount,cusNotExistCount)=>{
@@ -240,7 +240,7 @@ describe('#CsvReader.processCsv()', function() {
     context('with data contain invalid customer id', function() {
         it('result count should be 2,0,1', function(done) {
         
-            var reader = new CsvReader('./test/inValidCusId.csv');
+            var reader = new CsvReader('https://raw.githubusercontent.com/nobodyczcz/CsvImporter/master/test/inValidCusId.csv');
             reader.setUpReader((success,error=null)=>{
             });
             reader.processCsv(testDb,(successCount,insertErrorCount,cusNotExistCount)=>{
@@ -256,7 +256,7 @@ describe('#CsvReader.processCsv()', function() {
     context('with data contain duplicated order id', function() {
         it('result count should be 2,1,0', function(done) {
         
-            var reader = new CsvReader('./test/duplicateOrderId.csv');
+            var reader = new CsvReader('https://raw.githubusercontent.com/nobodyczcz/CsvImporter/master/test/duplicateOrderId.csv');
             reader.setUpReader((success,error=null)=>{
             });
             reader.processCsv(testDb,(successCount,insertErrorCount,cusNotExistCount)=>{
@@ -272,7 +272,7 @@ describe('#CsvReader.processCsv()', function() {
     context('with data do not have orderId', function() {
         it('result count should be 0,3,0', function(done) {
         
-            var reader = new CsvReader('./test/noOrderId.csv');
+            var reader = new CsvReader('https://raw.githubusercontent.com/nobodyczcz/CsvImporter/master/test/noOrderId.csv');
             reader.setUpReader((success,error=null)=>{
             });
             reader.processCsv(testDb,(successCount,insertErrorCount,cusNotExistCount)=>{
@@ -288,7 +288,7 @@ describe('#CsvReader.processCsv()', function() {
     context('with data do not have customerId', function() {
         it('result count should be 0,0,3', function(done) {
         
-            var reader = new CsvReader('./test/noCustomerId.csv');
+            var reader = new CsvReader('https://raw.githubusercontent.com/nobodyczcz/CsvImporter/master/test/noCustomerId.csv');
             reader.setUpReader((success,error=null)=>{
             });
             reader.processCsv(testDb,(successCount,insertErrorCount,cusNotExistCount)=>{
