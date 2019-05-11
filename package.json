@@ -4,7 +4,7 @@
   "description": "Import csv from url and write to mangodb",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
@@ -22,6 +22,10 @@
   "homepage": "https://github.com/nobodyczcz/CsvImporter#readme",
   "dependencies": {
     "argparse": "^1.0.10",
+    "fast-csv": "^2.5.0",
     "mongoose": "^5.5.7"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0"
   }
 }
