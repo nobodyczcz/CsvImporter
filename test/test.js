@@ -156,14 +156,20 @@ describe('#CsvReader.setUpReader()', function() {
         
             var reader = new CsvReader('https://raw.githubusercontent.com/nobodyczcz/CsvImporter/master/test/orders.csv');
             reader.setUpReader((success,error=null)=>{
-                if(success){
                     expect(success).to.be.true;
                     done()
-                }
-                else{
-                    done(error)
-                }
+            });
+          
+        })
+    })
 
+    context('With url but file do not exist', function() {
+        it('should return false', function(done) {
+        
+            var reader = new CsvReader('https://raw.githubusercontent.com/nobodyczcz/CsvImporter/master/xxxxx.csv');
+            reader.setUpReader((success,error=null)=>{
+                expect(success).to.be.false;
+                done();
             });
           
         })
@@ -172,10 +178,10 @@ describe('#CsvReader.setUpReader()', function() {
     context('with invalid url', function() {
         it('should return false', function(done) {
         
-            var reader = new CsvReader('https://raw.githubusercontent.com/nobodyczcz/CsvImporter/master/xxxxx.csv');
+            var reader = new CsvReader('thisisinvalid');
             reader.setUpReader((success,error=null)=>{
                 expect(success).to.be.false;
-                done()
+                done();
             });
           
         })

@@ -24,19 +24,23 @@ class CsvReader {
     * @param {function} callBack the callback function that will be called after create file stream successful
     */
     setUpReader(callBack){
-
-        this.stream = request(this.url);// Open file as stream to handle large file
-        this.stream.on('response', function(response) {
-            if(response.statusCode==200){
-                callBack(true)
-            }
-            else{
-                callBack(false)
-            }
-          })
-        this.stream.on('error', (error) => { 
-            callBack(false,error)
-         });
+        try {
+            this.stream = request(this.url)// Open file as stream to handle large file
+            .on('response', function(response) {
+                if(response.statusCode==200){
+                    callBack(true)
+                }
+                else{
+                    callBack(false)
+                }
+            })
+            .on('error', (error) => { 
+                callBack(false,error)
+            });
+        }
+        catch (error){
+            callBack(false,error) //handle error if url is invalid
+        }
     }
 
     /**
@@ -45,6 +49,7 @@ class CsvReader {
     * @param {function} callBack callBack function after finish processing csv
     */
     processCsv(db,callBack=null){
+        //define callback functions for fast-csv
         var onValidate = (data,next) =>{
             if(!data.customerId){
                 console.error('customerId does not exist');
@@ -99,6 +104,7 @@ class CsvReader {
 
         }
 
+        //start processing csv
         csv
             .fromStream(this.stream,{headers:true,ignoreEmpty:true})
             .validate(onValidate)
