@@ -9,7 +9,7 @@ Then the program process the csv stream and write data to mongodb with mongoose.
 1. Clone the repository.
 2. Use `npm install` to install dependencies.
 3. Go to the program folder.
-4. Use `node app.js -u url/to/file.csv -m mongoDb_Connection_String` to run the app.
+4. Use `node app.js -u https://url/to/file.csv -m mongoDb_Connection_String` to run the app.
 
 # Test
 Use `npm test` to run unit test by MOCHA and chai.
