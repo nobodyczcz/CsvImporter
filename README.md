@@ -11,8 +11,8 @@ Email: zhechen0213@gmail.com
 
 # Usage
 1. Clone the repository.
-2. Use `npm install` to install dependencies.
-3. Go to the program folder.
+2. Go to the program folder.
+3. Use `npm install` to install dependencies.
 4. Use `node app.js -u https://url/to/file.csv -m mongoDb_Connection_String` to run the app.
 
 # Test
