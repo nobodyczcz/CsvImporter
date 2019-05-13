@@ -5,6 +5,10 @@ This program read csv file with request() from a url as stream. Read file as a s
 
 Then the program process the csv stream and write data to mongodb with mongoose.
 
+Author: Zhe Chen
+
+Email: zhechen0213@gmail.com
+
 # Usage
 1. Clone the repository.
 2. Use `npm install` to install dependencies.
