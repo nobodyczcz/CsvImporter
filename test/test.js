@@ -158,7 +158,7 @@ describe('#DataBase.createOrder()', function() {
 
 //Test set up connection to a files
 describe('#CsvReader.setUpReader()', function() {
-
+    this.timeout(5000);
     context('with valid url', function() {
         it('should return true', function(done) {
         
@@ -202,7 +202,7 @@ describe('#CsvReader.setUpReader()', function() {
 
 //test processCsv() function
 describe('#CsvReader.processCsv()', function() {
-    this.timeout(10000);
+    this.timeout(1000000);
     context('with empty file', function() {
         it('result count should all be 0', function(done) {
 
@@ -244,22 +244,15 @@ describe('#CsvReader.processCsv()', function() {
     })
     
     context('with valid data', function() {
-        it('result count should be 3,0,0', async function(done) {
-            const count = await testDb.Order.count()
+        it('result count should be 3,0,0', function(done) {
             var reader = new CsvReader('https://raw.githubusercontent.com/nobodyczcz/CsvImporter/master/test/valid.csv');
             reader.setUpReader((success,error=null)=>{
-                reader.processCsv(testDb,()=>{
-                    testDb.Order.count({},(err,result)=>{
-                        expect(result).to.be.equal(3)
-                        done();
-                    })
+                reader.processCsv(testDb,(successCount,insertErrorCount,cusNotExistCount)=>{
+                    expect(successCount).to.be.equal(3)
+                    done()
                     
                 });
-                
             })
-
-           
-          
         })
     })
 
@@ -271,7 +264,7 @@ describe('#CsvReader.processCsv()', function() {
                 reader.processCsv(testDb,()=>{
                     testDb.Order.count({},(err,result)=>{
                         expect(result).to.be.equal(5)
-                        done();
+                        done()
                     })
                     
                 });
@@ -351,6 +344,20 @@ describe('#CsvReader.processCsv()', function() {
     context('Insert 10000 row to database', function() {
         it('Should take some time', function(done) {
                 var reader = new CsvReader('https://raw.githubusercontent.com/nobodyczcz/CsvImporter/master/test/10000row.csv');
+                reader.setUpReader((success,error=null)=>{
+                    reader.processCsv(testDb,()=>{
+                        clearOrders(testDb);
+                            done();
+                });
+            })
+            
+          
+        })
+    })
+
+    context('Insert 150000 row to database', function() {
+        it('Should take some time', function(done) {
+                var reader = new CsvReader('https://raw.githubusercontent.com/nobodyczcz/CsvImporter/master/test/150000row.csv');
                 reader.setUpReader((success,error=null)=>{
                     reader.processCsv(testDb,()=>{
                         clearOrders(testDb);

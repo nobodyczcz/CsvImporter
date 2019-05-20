@@ -16,7 +16,8 @@ class CsvReader {
         this.successCount=0;
         this.cusNotExistCount=0;
         this.insertErrorCount=0;
-        this.collections = {}
+        this.collections = {};
+        this.sendCount=0;
     }
 
     /**
@@ -48,7 +49,7 @@ class CsvReader {
     * @param {object} db the mangodb connection
     * @param {function} callBack callBack function after finish processing csv
     */
-    processCsv(db,callBack=null){
+    processCsv(db,finalCallback=null){
         //define callback functions for fast-csv
 
 
@@ -66,28 +67,33 @@ class CsvReader {
 
             if(this.collections[data.customerId].length>=100){
                 var orders = this.collections[data.customerId]
+                this.sendCount++
                 db.collectionInsert(
                     data.customerId,
                     orders,
                     this.insertCallBack.bind(this),
-                    this.curIdErr.bind(this)
-                    )
-                    this.collections[data.customerId]=[]
+                    this.curIdErr.bind(this),
+                    finalCallback
+                )
+                this.collections[data.customerId]=[]
             }
         }
+        
         var onEnd=()=>{
             for (var id in this.collections){
                 if (this.collections[id].length>0){
+                    this.sendCount++
                     db.collectionInsert(
                         id,
                         this.collections[id],
                         this.insertCallBack.bind(this),
-                        this.curIdErr.bind(this)
+                        this.curIdErr.bind(this),
+                        finalCallback
                         )
                 }
             }
-            if(callBack){
-             setTimeout(()=>{callBack(this.successCount,this.insertErrorCount,this.cusNotExistCount)},200)
+            if(this.sendCount==0){
+                finalCallback(this.successCount,this.insertErrorCount,this.cusNotExistCount)
             }
             
 
@@ -97,21 +103,33 @@ class CsvReader {
         csv
             .fromStream(this.stream,{headers:true,ignoreEmpty:true})
             .on("data", onData)
+            .on("error",(error)=>console.log(error))
             .on("end", onEnd);
     }
 
-    insertCallBack(err,id){
+    insertCallBack(err,id,finalCallback=null){
+        this.sendCount--
         if(err){
             this.insertErrorCount=this.insertErrorCount+this.collections[id].length
         }
         else{
             this.successCount=this.successCount+this.collections[id].length
         }
+ 
+        if(this.sendCount==0){
+            finalCallback(this.successCount,this.insertErrorCount,this.cusNotExistCount)
+        }
 
     }
 
-    curIdErr(id){
+    curIdErr(id,finalCallback=null){
+        this.sendCount--
+
         this.cusNotExistCount=this.cusNotExistCount+this.collections[id].length;
+        if(this.sendCount==0){
+            finalCallback(this.successCount,this.insertErrorCount,this.cusNotExistCount)
+        }
+
     }
 
 

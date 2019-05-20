@@ -55,17 +55,11 @@ class DataBase {
         this.checkCustomerId(id,(result)=>{
             if(result){
                 this.Order.insertMany(data,(err,docs)=>{
-                    callback(err,id)
-                    if(finalCall){
-                        finallCall()
-                    }
+                    callback(err,id,finalCall)
                 })
             }
             else{
-                curIdErr(id)
-                if(finalCall){
-                    finallCall()
-                }
+                curIdErr(id,finalCall)
             }
         })
     }
