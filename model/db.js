@@ -51,6 +51,13 @@ class DataBase {
         })
     }
 
+    /**
+     * @param {string} id the customer id
+     * @param {Array<Object>} data array of order object that need to insert to database 
+    * @param {function} callBack the callback function that will be called to handle insert reply from server
+    * @param {function} curIdErr callback function to handle customer id don't exist error
+    * @param {function} finalCall the function that might be used for handle program exit
+    */
     collectionInsert(id,data,callback,curIdErr,finalCall=null){
         this.checkCustomerId(id,(result)=>{
             if(result){

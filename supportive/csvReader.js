@@ -107,6 +107,12 @@ class CsvReader {
             .on("end", onEnd);
     }
 
+    /**
+     * This function will be called to deal database response
+    * @param {object} err error message
+    * @param {string} id the customer id 
+    * @param {function} finalCallback the callback function to handle program exit
+    */
     insertCallBack(err,id,finalCallback=null){
         this.sendCount--
         if(err){
@@ -122,6 +128,11 @@ class CsvReader {
 
     }
 
+    /**
+     * This function will be called if customer id not exist in the database
+    * @param {string} id the customer id 
+    * @param {function} finalCallback the callback function to handle program exit
+    */
     curIdErr(id,finalCallback=null){
         this.sendCount--
 
