@@ -56,10 +56,16 @@ class DataBase {
             if(result){
                 this.Order.insertMany(data,(err,docs)=>{
                     callback(err,id)
+                    if(finalCall){
+                        finallCall()
+                    }
                 })
             }
             else{
                 curIdErr(id)
+                if(finalCall){
+                    finallCall()
+                }
             }
         })
     }

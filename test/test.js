@@ -10,7 +10,7 @@ if (!validString){
 }
 
 async function clearOrders(testDb){
-    var result = await testDb.Order.deleteMany({});
+ await testDb.Order.deleteMany({});
 }
 
 //test db connection
@@ -244,7 +244,8 @@ describe('#CsvReader.processCsv()', function() {
     })
     
     context('with valid data', function() {
-        it('result count should be 3,0,0', function(done) {
+        it('result count should be 3,0,0', async function(done) {
+            const count = await testDb.Order.count()
             var reader = new CsvReader('https://raw.githubusercontent.com/nobodyczcz/CsvImporter/master/test/valid.csv');
             reader.setUpReader((success,error=null)=>{
                 reader.processCsv(testDb,()=>{
@@ -325,10 +326,7 @@ describe('#CsvReader.processCsv()', function() {
                     reader.processCsv(testDb,()=>{
                         testDb.Order.count({},(err,result)=>{
                             expect(result).to.be.equal(7)
-                            //clearOrders(testDb);
-    
                             done();
-                            process.exit(0)
                         })
                 });
             })
@@ -336,6 +334,35 @@ describe('#CsvReader.processCsv()', function() {
           
         })
     })
+
+    context('Insert 1000 row to database', function() {
+        it('should take a few time', function(done) {
+                var reader = new CsvReader('https://raw.githubusercontent.com/nobodyczcz/CsvImporter/master/test/1000row.csv');
+                reader.setUpReader((success,error=null)=>{
+                    reader.processCsv(testDb,()=>{
+                            done();
+                        })
+            })
+            
+          
+        })
+    })
+
+    context('Insert 10000 row to database', function() {
+        it('Should take some time', function(done) {
+                var reader = new CsvReader('https://raw.githubusercontent.com/nobodyczcz/CsvImporter/master/test/10000row.csv');
+                reader.setUpReader((success,error=null)=>{
+                    reader.processCsv(testDb,()=>{
+                        clearOrders(testDb);
+                            done();
+                });
+            })
+            
+          
+        })
+    })
+
+    
 
 
 

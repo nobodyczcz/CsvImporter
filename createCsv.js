@@ -4,8 +4,8 @@ function getRandomArbitrary(min, max) {
     return Math.random() * (max - min) + min;
   }
 
-let writeStream = fs.createWriteStream("./test/10000row.csv")
-writeStream.write('orderId,customerId,item,quantity', 'utf-8');
+let writeStream = fs.createWriteStream("./test/1000row.csv")
+writeStream.write('orderId,customerId,item,quantity\n', 'utf-8');
 
 
 for(var i=1030;i<11030;i++){

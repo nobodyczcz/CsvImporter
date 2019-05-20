@@ -87,7 +87,7 @@ class CsvReader {
                 }
             }
             if(callBack){
-             setTimeout(callBack,500)
+             setTimeout(()=>{callBack(this.successCount,this.insertErrorCount,this.cusNotExistCount)},200)
             }
             
 
