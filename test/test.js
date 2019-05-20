@@ -2,7 +2,13 @@ var expect = require('chai').expect;
 const DataBase = require('../model/db').DataBase;
 const CsvReader = require('../supportive/csvReader').CsvReader;
 
+const validString = 'mongodb+srv://czcz213:no.04792@csvdb-wsoun.mongodb.net/test?retryWrites=true'
 //clear orders
+
+if (!validString){
+    throw "Please provide a valid connection string to perform test"
+}
+
 async function clearOrders(testDb){
     var result = await testDb.Order.deleteMany({});
 }
@@ -13,7 +19,7 @@ describe('#DataBase.setUpConnection()', function() {
     context('with valid connection string', function() {
         it('should return true', function(done) {
         
-            var db = new DataBase('mongodb+srv://czcz213:no.04792@csvdb-wsoun.mongodb.net/test?retryWrites=true');
+            var db = new DataBase(validString);
             db.setUpConnection((success,error=null) => {
                 expect(success).to.be.true;
                 done(error)
@@ -37,11 +43,14 @@ describe('#DataBase.setUpConnection()', function() {
 
 });
 
-var testDb = new DataBase('mongodb+srv://czcz213:no.04792@csvdb-wsoun.mongodb.net/test?retryWrites=true');
+var testDb = new DataBase(validString);
 testDb.setUpConnection((success,error=null) => {
     if(error){
         process.exit(1);
+        
     }
+    clearOrders(testDb);
+
 });
 
 //test checkCustomerId() function
@@ -60,7 +69,7 @@ describe('#DataBase.checkCustomerId()', function() {
 
     context('with un-exist customerId', function() {
         it('should return empty data', function(done) {
-            testDb.checkCustomerId('5',result=>{
+            testDb.checkCustomerId('5555555',result=>{
                 expect(result).to.be.null;
                 done()
             })
@@ -70,7 +79,6 @@ describe('#DataBase.checkCustomerId()', function() {
 
 
 
-clearOrders(testDb);
 
 // test createOrder()
 describe('#DataBase.createOrder()', function() {
@@ -181,6 +189,7 @@ describe('#CsvReader.setUpReader()', function() {
             var reader = new CsvReader('thisisinvalid');
             reader.setUpReader((success,error=null)=>{
                 expect(success).to.be.false;
+                clearOrders(testDb);
                 done();
             });
           
@@ -190,119 +199,140 @@ describe('#CsvReader.setUpReader()', function() {
 
 });
 
-clearOrders(testDb);
 
 //test processCsv() function
 describe('#CsvReader.processCsv()', function() {
     this.timeout(10000);
     context('with empty file', function() {
         it('result count should all be 0', function(done) {
-        
+
+
             var reader = new CsvReader('https://raw.githubusercontent.com/nobodyczcz/CsvImporter/master/test/emptyfile.csv');
             reader.setUpReader((success,error=null)=>{
+                reader.processCsv(testDb,()=>{
+                    testDb.Order.count({},(err,result)=>{
+                        expect(result).to.be.equal(0)
+                        done();
+                    })
+                    
             });
-            reader.processCsv(testDb,(successCount,insertErrorCount,cusNotExistCount)=>{
-                expect(successCount).to.equal(0);
-                expect(insertErrorCount).to.equal(0);
-                expect(cusNotExistCount).to.equal(0);
-                done();
-            });
+               
+            })
+            
           
         })
     })
 
     context('with file but not csv', function() {
         it('result count should be 0,0,1', function(done) {
-        
+
+
             var reader = new CsvReader('https://raw.githubusercontent.com/nobodyczcz/CsvImporter/master/test/notCsv.csv');
             reader.setUpReader((success,error=null)=>{
-            });
-            reader.processCsv(testDb,(successCount,insertErrorCount,cusNotExistCount)=>{
-                expect(successCount).to.equal(0);
-                expect(insertErrorCount).to.equal(0);
-                expect(cusNotExistCount).to.equal(1);
-                done();
-            });
+                reader.processCsv(testDb,()=>{
+                    testDb.Order.count({},(err,result)=>{
+                        expect(result).to.be.equal(0)
+                        done();
+                    })
+                    
+                });
+               
+            })
+            
           
         })
     })
     
     context('with valid data', function() {
         it('result count should be 3,0,0', function(done) {
-        
             var reader = new CsvReader('https://raw.githubusercontent.com/nobodyczcz/CsvImporter/master/test/valid.csv');
             reader.setUpReader((success,error=null)=>{
-            });
-            reader.processCsv(testDb,(successCount,insertErrorCount,cusNotExistCount)=>{
-                expect(successCount).to.equal(3);
-                expect(insertErrorCount).to.equal(0);
-                expect(cusNotExistCount).to.equal(0);
-                done();
-            });
+                reader.processCsv(testDb,()=>{
+                    testDb.Order.count({},(err,result)=>{
+                        expect(result).to.be.equal(3)
+                        done();
+                    })
+                    
+                });
+                
+            })
+
+           
           
         })
     })
 
     context('with data contain invalid customer id', function() {
         it('result count should be 2,0,1', function(done) {
-        
+
             var reader = new CsvReader('https://raw.githubusercontent.com/nobodyczcz/CsvImporter/master/test/inValidCusId.csv');
             reader.setUpReader((success,error=null)=>{
-            });
-            reader.processCsv(testDb,(successCount,insertErrorCount,cusNotExistCount)=>{
-                expect(successCount).to.equal(2);
-                expect(insertErrorCount).to.equal(0);
-                expect(cusNotExistCount).to.equal(1);
-                done();
-            });
+                reader.processCsv(testDb,()=>{
+                    testDb.Order.count({},(err,result)=>{
+                        expect(result).to.be.equal(5)
+                        done();
+                    })
+                    
+                });
+            
+            })
+            
           
         })
     })
 
     context('with data contain duplicated order id', function() {
         it('result count should be 2,1,0', function(done) {
-        
+ 
             var reader = new CsvReader('https://raw.githubusercontent.com/nobodyczcz/CsvImporter/master/test/duplicateOrderId.csv');
             reader.setUpReader((success,error=null)=>{
-            });
-            reader.processCsv(testDb,(successCount,insertErrorCount,cusNotExistCount)=>{
-                expect(successCount).to.equal(2);
-                expect(insertErrorCount).to.equal(1);
-                expect(cusNotExistCount).to.equal(0);
-                done();
-            });
+                reader.processCsv(testDb,()=>{
+                    testDb.Order.count({},(err,result)=>{
+                        expect(result).to.be.equal(7)
+                        done();
+                    })
+                    
+                });
+            
+            })
+            
           
         })
     })
 
     context('with data do not have orderId', function() {
         it('result count should be 0,3,0', function(done) {
-        
-            var reader = new CsvReader('https://raw.githubusercontent.com/nobodyczcz/CsvImporter/master/test/noOrderId.csv');
-            reader.setUpReader((success,error=null)=>{
-            });
-            reader.processCsv(testDb,(successCount,insertErrorCount,cusNotExistCount)=>{
-                expect(successCount).to.equal(0);
-                expect(insertErrorCount).to.equal(3);
-                expect(cusNotExistCount).to.equal(0);
-                done();
-            });
+                var reader = new CsvReader('https://raw.githubusercontent.com/nobodyczcz/CsvImporter/master/test/noOrderId.csv');
+                reader.setUpReader((success,error=null)=>{
+                    reader.processCsv(testDb,()=>{
+                        testDb.Order.count({},(err,result)=>{
+                            expect(result).to.be.equal(7)
+                            done();
+                        })
+                        
+                    });
+               
+            })
+           
           
         })
     })
 
     context('with data do not have customerId', function() {
         it('result count should be 0,0,3', function(done) {
-        
-            var reader = new CsvReader('https://raw.githubusercontent.com/nobodyczcz/CsvImporter/master/test/noCustomerId.csv');
-            reader.setUpReader((success,error=null)=>{
-            });
-            reader.processCsv(testDb,(successCount,insertErrorCount,cusNotExistCount)=>{
-                expect(successCount).to.equal(0);
-                expect(insertErrorCount).to.equal(0);
-                expect(cusNotExistCount).to.equal(3);
-                done();
-            });
+                var reader = new CsvReader('https://raw.githubusercontent.com/nobodyczcz/CsvImporter/master/test/noCustomerId.csv');
+                reader.setUpReader((success,error=null)=>{
+                    reader.processCsv(testDb,()=>{
+                        testDb.Order.count({},(err,result)=>{
+                            expect(result).to.be.equal(7)
+                            //clearOrders(testDb);
+    
+                            done();
+                            process.exit(0)
+                        })
+                });
+            })
+            
           
         })
     })
@@ -312,5 +342,4 @@ describe('#CsvReader.processCsv()', function() {
 });
 
 
-clearOrders(testDb);
 

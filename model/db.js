@@ -37,10 +37,7 @@ class DataBase {
     * @param {function} next the callback function that will be called to handle check result
     */
     checkCustomerId(id,next){
-        this.Customer.findOne({customerId:id}).select("customerId").lean().then(result => {
-            next(result)
-        });
-
+        this.Customer.findOne({customerId:id}).select("customerId").lean().then(next)
     }
 
     /**
@@ -51,6 +48,19 @@ class DataBase {
         var newOrder = new this.Order(theOrder)
         newOrder.save((err)=>{
             callBack(err)
+        })
+    }
+
+    collectionInsert(id,data,callback,curIdErr,finalCall=null){
+        this.checkCustomerId(id,(result)=>{
+            if(result){
+                this.Order.insertMany(data,(err,docs)=>{
+                    callback(err,id)
+                })
+            }
+            else{
+                curIdErr(id)
+            }
         })
     }
 

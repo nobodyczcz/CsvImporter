@@ -16,7 +16,7 @@ class CsvReader {
         this.successCount=0;
         this.cusNotExistCount=0;
         this.insertErrorCount=0;
-
+        this.collections = {}
     }
 
     /**
@@ -50,31 +50,6 @@ class CsvReader {
     */
     processCsv(db,callBack=null){
         //define callback functions for fast-csv
-        var onValidate = (data,next) =>{
-            if(!data.customerId){
-                console.error('customerId does not exist');
-                this.cusNotExistCount++;
-                next(null);
-            }
-            else if(!data.orderId){
-                console.error('orderId does not exist');
-                this.insertErrorCount++;
-                next(null);
-            }
-            else{
-                db.checkCustomerId(data.customerId,(result)=>{
-                    if(result){
-                        next(null,true)
-                    }
-                    else{
-                        this.cusNotExistCount++;
-                        console.error(`${data.customerId} does not exist`)
-                        next(null);
-                    }
-                })
-            }
-            
-        }
 
 
         var onData=(data)=>{
@@ -84,33 +59,61 @@ class CsvReader {
                 item: data.item,
                 quantity:data.quantity,
             }
-            db.createOrder(order,error => {
-                if(error){
-                    this.insertErrorCount++;
-                    console.error(error.errmsg);
-                }
-                else{
-                    this.successCount++;
-                }
-        
-            })
+            if (!this.collections[data.customerId]){
+                this.collections[data.customerId] = []
+            }
+            this.collections[data.customerId].push(order)
+
+            if(this.collections[data.customerId].length>=100){
+                var orders = this.collections[data.customerId]
+                db.collectionInsert(
+                    data.customerId,
+                    orders,
+                    this.insertCallBack.bind(this),
+                    this.curIdErr.bind(this)
+                    )
+                    this.collections[data.customerId]=[]
+            }
         }
         var onEnd=()=>{
-            console.log('Finish read csv file after 2 seconds');
-            if(callBack){
-                setTimeout(()=>{callBack(this.successCount,this.insertErrorCount,this.cusNotExistCount)},2000)
-                
+            for (var id in this.collections){
+                if (this.collections[id].length>0){
+                    db.collectionInsert(
+                        id,
+                        this.collections[id],
+                        this.insertCallBack.bind(this),
+                        this.curIdErr.bind(this)
+                        )
+                }
             }
+            if(callBack){
+             setTimeout(callBack,500)
+            }
+            
 
         }
 
         //start processing csv
         csv
             .fromStream(this.stream,{headers:true,ignoreEmpty:true})
-            .validate(onValidate)
             .on("data", onData)
             .on("end", onEnd);
     }
+
+    insertCallBack(err,id){
+        if(err){
+            this.insertErrorCount=this.insertErrorCount+this.collections[id].length
+        }
+        else{
+            this.successCount=this.successCount+this.collections[id].length
+        }
+
+    }
+
+    curIdErr(id){
+        this.cusNotExistCount=this.cusNotExistCount+this.collections[id].length;
+    }
+
 
 
 
