@@ -31,6 +31,7 @@ Use `npm test` to run unit test by MOCHA and chai.
 **Data Exception hanle** The second part of unit test, tests the program's ability to handle data exceptions.
 
 **Performce Test** The third part measure the performance of the program.
+![test result](https://raw.githubusercontent.com/nobodyczcz/CsvImporter/master/test/test_result.png)
 
 ## Arguments
 
