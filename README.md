@@ -14,7 +14,7 @@ Here's the link to my [Medipass Backend Challenge part 2](https://github.com/nob
 1. The program first check does given url or mongodb connection esist. If exist move to next step.
 2. Then the program use request to open the url as stream.
 3. Processing the stream with Fast-csv package.
-4. In order to save internet/database resource, the program will try to group orders with same ID together. Then only one time customerId check for all the collections of data. If check successful, insert all the data with mongoose collection.insert()
+4. In order to save internet/database resource, the program will try to group orders with same ID together. Then only one time customerId check for all the collections of data. If check successful, insert all the data with mongoose insertMany()
 5. Report insertion results.
 
 ## Usage
