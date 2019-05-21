@@ -7,6 +7,8 @@ Author: Zhe Chen
 
 Email: zhechen0213@gmail.com
 
+Here's the link to my [Medipass Backend Challenge part 2](https://github.com/nobodyczcz/OrderArranger)
+
 ## Development
 
 1. The program first check does given url or mongodb connection esist. If exist move to next step.
